@@ -4,7 +4,7 @@ import PySimpleGUI as gui
 from Logic.Login.LoginPolicy import LoginPolicy
 
 
-class LoginWindow(DefaultWindow):
+class ConnectionWindow(DefaultWindow):
     def __init__(self,name):
         super().__init__(name)
 
@@ -13,8 +13,8 @@ class LoginWindow(DefaultWindow):
 
     def GetLayout(self):
         return [
-            [gui.Text("Podaj hasło")],
-            [gui.In(size=(25, 1), enable_events=True, key="-INPUT-",password_char='*')],
+            [gui.Text("Podaj adres rozmówcy")],
+            [gui.In(size=(25, 1), enable_events=True, key="-INPUT-")],
             [gui.Button('Submit',key="-SUBMIT-",visible=False, bind_return_key=True)]
         ],
 
@@ -23,9 +23,9 @@ class LoginWindow(DefaultWindow):
             event, values = self.window.read()
             
             if event == "Exit" or event == gui.WIN_CLOSED:
+                return '-EXIT-'
                 break
 
             if event == "-SUBMIT-":
-                login = LoginPolicy()
-                return login.LoadKeysFromFiles(values['-INPUT-'])
+                return values['-INPUT-']
 

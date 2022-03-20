@@ -1,13 +1,9 @@
-from GUI.Views.DefaultWindow import DefaultWindow
-from GUI.Views.LoginWindow import LoginWindow
-import PySimpleGUI as gui
-import hashlib
+from GUI.WindowManager import WindowManager
 
-pwd_hash = hashlib.sha512()
-pwd_hash.update(b"password")
+def main():
+    manager = WindowManager()
 
-gui.SetOptions(font='Arial 18 normal')
-lw = LoginWindow(pwd_hash.digest())
-lw.CreateWindow()
-lw.WindowLoop()
-lw.DestroyWindow()
+    manager.MainLoop()
+
+if __name__ == "__main__":
+    main()
