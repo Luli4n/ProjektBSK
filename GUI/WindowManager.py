@@ -1,4 +1,5 @@
 import PySimpleGUI as gui
+from GUI.Views.ChatWindow import ChatWindow
 from GUI.Views.ConnectionWindow import ConnectionWindow
 from GUI.Views.LoginWindow import LoginWindow
 
@@ -9,7 +10,7 @@ class WindowManager:
         self.LoginService()
 
         while self.ConnectionToBeEstablished():
-            print(1)
+            self.ChatService()
 
     def LoginService(self):
         loginWindow = LoginWindow('Login')
@@ -26,3 +27,10 @@ class WindowManager:
         connectionWindow.DestroyWindow()
 
         return False if self.connectionString == '-EXIT-' else True
+
+    def ChatService(self):
+        chatWindow = ChatWindow('Chat')
+
+        chatWindow.CreateWindow()
+        chatWindow.WindowLoop()
+        chatWindow.DestroyWindow()
