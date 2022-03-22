@@ -1,3 +1,4 @@
+from multiprocessing import BoundedSemaphore
 from GUI.Views.DefaultWindow import DefaultWindow
 import PySimpleGUI as gui
 
@@ -7,9 +8,10 @@ from Logic.Login.LoginPolicy import LoginPolicy
 class ChatWindow(DefaultWindow):
     def __init__(self,name):
         super().__init__(name)
+        self.semaphore = BoundedSemaphore(value=1)
 
     def CreateWindow(self):
-        self.window = gui.Window(self.name, self.GetLayout(), font=('Helvetica', ' 13'), default_button_element_size=(20,2), use_default_focus=False, finalize=True)
+        self.window = gui.Window(self.name, self.GetLayout(), default_button_element_size=(20,2), use_default_focus=False, finalize=True)
         self.window.Element('-OUT-').bind("<FocusIn>", '+FOCUS_IN+')
         self.window.Element('-OUT-').bind("<FocusOut>", '+FOCUS_OUT+')
 
@@ -41,3 +43,7 @@ class ChatWindow(DefaultWindow):
                 self.window['-OUT-'].Widget.unbind("<1>")
                 self.window['-OUT-'].update(disabled=False)
 
+    def UpdateOutput(self,text):
+        with self.semaphore:
+            output = self.window['-OUT-']
+            output.print('Stranger:' + text)
