@@ -11,7 +11,7 @@ class LoginPolicy:
         self.rsaManager = RSAKeysManagement()
 
     def LoadKeysFromFiles(self,password):
-        hash = hashlib.blake2s(bytes(password,'utf-8')).digest()
+        hash = hashlib.blake2s(bytes(password,'utf-8'),digest_size=32).digest()
 
         if not exists(self.publicKeyPath) or not exists(self.privateKeyPath):
             public, private = self.rsaManager.CreateRSAKeys() # RSA Class
@@ -19,9 +19,14 @@ class LoginPolicy:
             self.rsaManager.SaveKeyToFile(self.privateKeyPath, private, hash)
             return public, private
         else:
-            
-            public = self.rsaManager.GetKeyFromFile(self.publicKeyPath, hash) # Also RSA Class ?
-            private = self.rsaManager.GetKeyFromFile(self.privateKeyPath, hash)
+            try:
+                public = self.rsaManager.GetKeyFromFile(self.publicKeyPath, hash) # Also RSA Class ?
+            except:
+                public, _ = self.rsaManager.CreateRSAKeys()
+            try:
+                private = self.rsaManager.GetKeyFromFile(self.privateKeyPath, hash)
+            except:
+                _,private = self.rsaManager.CreateRSAKeys() 
 
             return public, private 
 

@@ -15,6 +15,7 @@ class RSAKeysManagement:
     def SaveKeyToFile(self, path, value, hash):
         aes_key = hash[0:16]
         aes_iv = hash[16:32]
+
         aesLogic = AESLogic()
 
         encrypted = aesLogic.Encrypt(value,aes_key,aes_iv)
@@ -24,6 +25,15 @@ class RSAKeysManagement:
         f.close()
 
     def GetKeyFromFile(self,path,hash):
-        return 0
+        aes_key = hash[0:16]
+        aes_iv = hash[16:32]
+
+        aesLogic = AESLogic()
+
+        f = open(path,'rb')
+        cipher = f.read()
+        
+        return aesLogic.Decrypt(cipher,aes_key,aes_iv)
+
 
 

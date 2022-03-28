@@ -11,3 +11,4 @@ class AESLogic:
     def Decrypt(self, ciphertext, key, iv):
         cipher = AES.new(bytes(key), AES.MODE_CBC, bytes(iv))
         return unpad(cipher.decrypt(ciphertext), AES.block_size)
+
