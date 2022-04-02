@@ -15,8 +15,9 @@ class WindowManager:
         gui.SetOptions(font='Arial 18 normal')
         self.LoginService()
 
-        while self.ConnectionToBeEstablished():
+        if self.ConnectionToBeEstablished():
             self.ChatService()
+
 
     def LoginService(self):
         loginWindow = LoginWindow('Login')
@@ -31,7 +32,6 @@ class WindowManager:
         connectionWindow.CreateWindow()
         self.connectionString = connectionWindow.WindowLoop()
         connectionWindow.DestroyWindow()
-
         return False if self.connectionString == '-EXIT-' else True
 
     def ChatService(self):
@@ -40,20 +40,26 @@ class WindowManager:
         self.serverThread = threading.Thread(target = self.CreateServer, args = [self.chatWindow])
         self.serverThread.start()
         self.ClientConnect()
+        self.server.Set_Client(self.client)
 
         self.SendPublicKey()
         self.WaitForStrangerKey()
-        print(self.strangerRSA)
 
         self.chatWindow.CreateWindow()
         self.chatWindow.WindowLoop(self.client)
         self.chatWindow.DestroyWindow()
 
+        self.server.Set_Exit(True)
+        self.client.Send(Frame('',FrameType.EXIT))
+
+        self.listenThread.join()
+        self.serverThread.join()
+
         self.DestroyServer()
     
     def CreateServer(self, chatWindow):
-        self.server = Server()
-        self.server.CreateServer('',8080)
+        self.server = Server(self.privateRSA)
+        self.server.CreateServer('',8083)
         self.listenThread = threading.Thread(target = self.server.Listen, args = ([chatWindow]))
         self.listenThread.start()
 
@@ -61,7 +67,7 @@ class WindowManager:
         self.client = Client(self.chatWindow)
         self.connectionWait = ConnectionEstablishWindow('Oczekiwanie na rozmowce',self.connectionString,self.client)
         self.connectionWait.CreateWindow()
-        self.connectionWait.WindowLoop('',8081)
+        self.connectionWait.WindowLoop('',8082)
         self.connectionWait.DestroyWindow()
 
     def SendPublicKey(self):
@@ -70,6 +76,7 @@ class WindowManager:
     
     def WaitForStrangerKey(self):
         self.strangerRSA = self.server.Get_RSA_Received()
+        self.client.Set_Stranger_RSA(self.strangerRSA)
 
     def DestroyServer(self):
         self.serverThread.join()
