@@ -4,11 +4,12 @@ import pickle
 
 class Frame:
 
-    def __init__(self, data, frame_type, file_extension = "", encrypt_type = 'NO'):
+    def __init__(self, data, frame_type,file_name = '', file_extension = "", encrypt_type = 'NO'):
         self.data = data
         self.file_extension = file_extension
         self.frame_type = frame_type
         self.encrypt_type = encrypt_type
+        self.file_name = file_name
 
 
 class FrameType(Enum):

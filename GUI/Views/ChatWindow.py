@@ -27,7 +27,7 @@ class ChatWindow(DefaultWindow):
     def GetLayout(self):
         return [
           [gui.In(size=(50,1), disabled=True), gui.FileBrowse(key='-FILE-'), gui.Button('Send_File')],
-          [gui.Text('', size=(50, 1), key='-PROGRESS-')],
+          [gui.Text('', font=('Courier 12'),size=(50, 1), key='-PROGRESS-')],
           [gui.Multiline(size=(50, 20), key='-OUT-', enter_submits=False),gui.Radio('ECB', "RADIO1", default=False, key="-ECB-",enable_events=True), gui.Radio('CBC', "RADIO1", default=True,key="-CBC-",enable_events=True)],
           [gui.Text('', size=(50, 1), key='-ALERTS-')],
           [gui.Multiline(size=(50, 5), enter_submits=False, key='-IN-',enable_events=True),

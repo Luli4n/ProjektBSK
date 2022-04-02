@@ -9,11 +9,7 @@ from Logic.Chat.Frame import Frame, FrameType
 from Logic.Crypto.AESLogic import AESLogic
 from Logic.Crypto.RSALogic import RSALogic
 
-HEADER = Struct("!L")
-
 class Server:
-
-    
     
     def __init__(self, private_rsa):
         self.semaphore = BoundedSemaphore(value=1)
@@ -24,9 +20,7 @@ class Server:
             self.RSA_Received = False
 
         with self.exitSemaphore:
-            self.Exit = False
-        
-        
+            self.Exit = False 
 
     def CreateServer(self, addr, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,6 +76,13 @@ class Server:
                 except:
                     frame.data = frame.data
                 chatWindow.UpdateOutput("Stranger: " + str(frame.data))
+            elif frame.frame_type == FrameType.FILE:
+                try:
+                    frame.data = AESLogic.Decrypt(frame.data,self.stranger_session_key[0:16],self.stranger_session_key[16:32],frame.encrypt_type)
+                except:
+                    frame.data = frame.data
+                with open('Downloads/'+frame.file_name+frame.file_extension, "a+b") as f:
+                    f.write(frame.data)
             elif frame.frame_type == FrameType.EXIT:
                 with self.exitSemaphore:
                     self.Exit = True
@@ -90,6 +91,5 @@ class Server:
                 if self.Exit:
                     self.client.Send(Frame('',FrameType.EXIT))
                     chatWindow.SetExitFlag(True)
-                    chatWindow.window.refresh()
                     break
 

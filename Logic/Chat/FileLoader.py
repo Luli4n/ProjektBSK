@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import tqdm
 
 from Logic.Chat.Frame import Frame, FrameType
@@ -12,8 +13,8 @@ class FileLoader:
 
     def SendFile(self, path, client, encryption_mode):
         filesize = os.path.getsize(path)
-        filename_with_extension = os.path.basename(path)
-        filename, extension = os.path.split(filename_with_extension)
+        filename=Path(path).stem
+        extension = Path(path).suffix
 
         self.progress = tqdm.tqdm(range(filesize), f"Sending {filename}", unit="B",bar_format='{l_bar}{bar:20}|', unit_scale=True, unit_divisor=1024, ascii=True)
 
@@ -24,7 +25,7 @@ class FileLoader:
                 if not bytes_read:
                     break
 
-                client.Send(Frame(bytes_read,FrameType.FILE,file_extension=extension,encrypt_type=encryption_mode))
+                client.Send(Frame(bytes_read,FrameType.FILE,file_name=filename,file_extension=extension,encrypt_type=encryption_mode))
 
                 self.progress.update(len(bytes_read))
                 self.chatWindow.UpdateBar(self.progress)

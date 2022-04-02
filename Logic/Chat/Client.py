@@ -47,16 +47,16 @@ class Client:
                 with self.sessionKeySemaphore:
                     sessionKeyFrame = SessionKey.PrepareSessionKeyFrame(self.strangerRSA,session_key)
                 session_string = pickle.dumps(sessionKeyFrame)
-                self.SendSizeFrame(sessionKeyFrame,len(session_string))
+                self.SendSizeFrame(len(session_string))
                 frame.data = AESLogic.Encrypt(frame.data,session_key[0:16],session_key[16:32],frame.encrypt_type)
                 self.socket.sendall(session_string)
 
             data_string = pickle.dumps(frame)
-            self.SendSizeFrame(frame,len(data_string))
+            self.SendSizeFrame(len(data_string))
             self.socket.sendall(data_string)
 
 
-    def SendSizeFrame(self, frame, size):
+    def SendSizeFrame(self, size):
         size_in_4_bytes = struct.pack('I', size)
         self.socket.sendall(pickle.dumps(Frame(size_in_4_bytes,FrameType.SIZE)))
 
